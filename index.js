@@ -54,26 +54,45 @@ app.post("/api/hotspot/create-user", async (req, res) => {
 
 app.get("/api/test-mikrotik", async (req, res) => {
   let conn, chan;
+
+  console.log("===== TEST MIKROTIK =====");
+  console.log("HOST:", process.env.MIKROTIK_HOST);
+  console.log("PORT:", process.env.MIKROTIK_PORT);
+  console.log("USER:", process.env.MIKROTIK_USER);
+  console.log("PASS:", process.env.MIKROTIK_PASS ? "****" : "NOT SET");
+
   try {
     const device = new MikroNode({
       host: process.env.MIKROTIK_HOST,
       port: process.env.MIKROTIK_PORT
     });
 
+    console.log("Tentative de connexion...");
+
     conn = await device.connect(
       process.env.MIKROTIK_USER,
       process.env.MIKROTIK_PASS
     );
+
+    console.log("Connexion réussie ✅");
 
     chan = conn.openChannel();
 
     res.json({ success: true, message: "Connexion OK" });
 
   } catch (error) {
-    res.json({ success: false, error: error.message });
+    console.error("Erreur MikroTik ❌:", error);
+
+    res.json({
+      success: false,
+      error: error.message
+    });
   } finally {
     try { chan && chan.close(); } catch {}
     try { conn && conn.close(); } catch {}
+
+    console.log("Connexion fermée 🔒");
+    console.log("=========================");
   }
 });
 
