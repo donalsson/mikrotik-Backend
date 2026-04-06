@@ -10,7 +10,11 @@ app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
 async function getConnection() {
-  const device = new MikroNode(process.env.MIKROTIK_HOST);
+  const device = new MikroNode({
+    host: process.env.MIKROTIK_HOST,
+    port: process.env.MIKROTIK_PORT
+  });
+  
   const conn = await device.connect(
     process.env.MIKROTIK_USER,
     process.env.MIKROTIK_PASS
