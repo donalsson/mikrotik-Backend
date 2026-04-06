@@ -52,6 +52,31 @@ app.post("/api/hotspot/create-user", async (req, res) => {
   }
 });
 
+app.get("/api/test-mikrotik", async (req, res) => {
+  let conn, chan;
+  try {
+    const device = new MikroNode({
+      host: process.env.MIKROTIK_HOST,
+      port: process.env.MIKROTIK_PORT
+    });
+
+    conn = await device.connect(
+      process.env.MIKROTIK_USER,
+      process.env.MIKROTIK_PASS
+    );
+
+    chan = conn.openChannel();
+
+    res.json({ success: true, message: "Connexion OK" });
+
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  } finally {
+    try { chan && chan.close(); } catch {}
+    try { conn && conn.close(); } catch {}
+  }
+});
+
 app.post("/api/hotspot/disable-user", async (req, res) => {
   const { username } = req.body;
 
